@@ -74,24 +74,7 @@ namespace SettingsDb
                     using (var reader = sqlCmd.ExecuteReader())
                     {
                         if (reader.Read())
-                        {
                             value = JsonSerializer.Deserialize<T>(reader.GetString(0));
-                            /*
-                            if (typeof(T) == typeof(byte[]))
-                            {
-                                var t = new System.IO.BinaryReader(reader.GetStream(0));
-                                t.
-
-                                value = reader. Convert.FromBase64String(reader.GetString(0)) as T;
-                            }
-
-                            else
-                            {
-                                var typeConverter = TypeDescriptor.GetConverter(typeof(T));
-                                value = (T)typeConverter.ConvertFromString(reader.GetString(0));
-                            }
-                            */
-                        }
                     }
                 }
 
