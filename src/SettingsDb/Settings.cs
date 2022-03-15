@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 using Microsoft.Data.Sqlite;
 
@@ -59,6 +60,12 @@ namespace SettingsDb
         }
 
 
+        public async void StoreAsync<T>(string settingName, T value)
+        {
+            await Task.Run(() => Store(settingName, value));
+        }
+
+
         public T Read<T>(string settingName, T defaultValue = default)
         {
             T value = defaultValue;
@@ -85,6 +92,12 @@ namespace SettingsDb
         }
 
 
+        public async Task<T> ReadAsync<T>(string settingName, T defaultValue = default)
+        {
+            return await Task.Run(() => Read(settingName, defaultValue));
+        }
+
+
         public void Delete(string settingName)
         {
             using (var dbConnection = new SqliteConnection(_connectionString))
@@ -102,6 +115,12 @@ namespace SettingsDb
         }
 
 
+        public async void DeleteAsync(string settingName)
+        {
+            await Task.Run(() => Delete(settingName));
+        }
+
+
         public void Clear()
         {
             using (var dbConnection = new SqliteConnection(_connectionString))
@@ -113,6 +132,12 @@ namespace SettingsDb
 
                 dbConnection.Close();
             }
+        }
+
+
+        public async void ClearAsync()
+        {
+            await Task.Run(() => Clear());
         }
     }
 }
