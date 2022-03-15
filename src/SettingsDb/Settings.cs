@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -19,9 +21,12 @@ namespace SettingsDb
         }
 
 
-        public Settings(string name)
+        public Settings(string databaseName)
         {
-            _connectionString = $"Data Source={name}.db";
+            if (databaseName == null)
+                throw new ArgumentNullException(nameof(databaseName));
+
+            _connectionString = $"Data Source={Path.GetFileNameWithoutExtension(databaseName)}.db";
             InitDatabase();
         }
 
@@ -44,6 +49,9 @@ namespace SettingsDb
 
         public void Store<T>(string settingName, T value)
         {
+            if (settingName == null)
+                throw new ArgumentNullException(nameof(settingName));
+
             using (var dbConnection = new SqliteConnection(_connectionString))
             {
                 dbConnection.Open();
@@ -68,6 +76,9 @@ namespace SettingsDb
 
         public T Read<T>(string settingName, T defaultValue = default)
         {
+            if (settingName == null)
+                throw new ArgumentNullException(nameof(settingName));
+
             T value = defaultValue;
 
             using (var dbConnection = new SqliteConnection(_connectionString))
@@ -100,6 +111,9 @@ namespace SettingsDb
 
         public void Clear(string settingName)
         {
+            if (settingName == null)
+                throw new ArgumentNullException(nameof(settingName));
+
             using (var dbConnection = new SqliteConnection(_connectionString))
             {
                 dbConnection.Open();
