@@ -1,0 +1,8 @@
+  <Project>
+
+    <PropertyGroup>
+      <BaseIntermediateOutputPath>..\..\obj\SettingsDb</BaseIntermediateOutputPath>
+      <BaseOutputPath>..\..\bin\SettingsDb</BaseOutputPath>
+    </PropertyGroup>
+    
+</Project>

@@ -1,0 +1,8 @@
+  <Project>
+
+    <PropertyGroup>
+      <BaseIntermediateOutputPath>..\..\obj\TestUnits</BaseIntermediateOutputPath>
+      <BaseOutputPath>..\..\bin\TestUnits</BaseOutputPath>
+    </PropertyGroup>
+    
+</Project>
