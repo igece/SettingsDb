@@ -98,7 +98,7 @@ namespace SettingsDb
         }
 
 
-        public void Delete(string settingName)
+        public void Clear(string settingName)
         {
             using (var dbConnection = new SqliteConnection(_connectionString))
             {
@@ -115,13 +115,13 @@ namespace SettingsDb
         }
 
 
-        public async void DeleteAsync(string settingName)
+        public async void ClearAsync(string settingName)
         {
-            await Task.Run(() => Delete(settingName));
+            await Task.Run(() => Clear(settingName));
         }
 
 
-        public void Clear()
+        public void ClearAll()
         {
             using (var dbConnection = new SqliteConnection(_connectionString))
             {
@@ -135,9 +135,9 @@ namespace SettingsDb
         }
 
 
-        public async void ClearAsync()
+        public async void ClearAllAsync()
         {
-            await Task.Run(() => Clear());
+            await Task.Run(() => ClearAll());
         }
     }
 }
