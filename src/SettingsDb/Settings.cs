@@ -68,7 +68,7 @@ namespace SettingsDb
         }
 
 
-        public async void StoreAsync<T>(string settingName, T value)
+        public async Task StoreAsync<T>(string settingName, T value)
         {
             await Task.Run(() => Store(settingName, value));
         }
@@ -129,7 +129,7 @@ namespace SettingsDb
         }
 
 
-        public async void ClearAsync(string settingName)
+        public async Task ClearAsync(string settingName)
         {
             await Task.Run(() => Clear(settingName));
         }
@@ -149,7 +149,7 @@ namespace SettingsDb
         }
 
 
-        public async void ClearAllAsync()
+        public async Task ClearAllAsync()
         {
             await Task.Run(() => ClearAll());
         }
