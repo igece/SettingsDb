@@ -205,5 +205,29 @@ namespace SettingsDb
         {
             await Task.Run(() => ClearAll());
         }
+
+
+        public long Count()
+        {
+            long count = 0;
+
+            using (var dbConnection = new SqliteConnection(_connectionString))
+            {
+                dbConnection.Open();
+
+                using (var sqlCmd = new SqliteCommand($"SELECT COUNT() FROM \"{_settingsTable}\"", dbConnection))
+                    count = (long)sqlCmd.ExecuteScalar();
+
+                dbConnection.Close();
+            }
+
+            return count;
+        }
+
+
+        public async Task<long> CountAsync()
+        {
+            return await Task.Run(() => Count());
+        }
     }
 }

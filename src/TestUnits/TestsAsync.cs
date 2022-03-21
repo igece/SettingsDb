@@ -6,6 +6,7 @@ using SettingsDb;
 
 using Xunit;
 
+
 namespace TestUnits
 {
     public class TestsAsync
@@ -88,25 +89,8 @@ namespace TestUnits
         }
 
 
-        class TestClass
-        {
-            public int Property1 { get; set; } = 1;
-
-            public List<string> Property2 { get; set; } = new List<string>(new string[] { "value1", "value2" });
-
-            public override bool Equals(object obj)
-            {
-                if (obj is not TestClass other)
-                    return false;
-
-                return Property1 == other.Property1 &&
-                   Enumerable.SequenceEqual(Property2, other.Property2);
-            }
-        }
-
-
         [Fact(DisplayName = "Store an arbitrary object (async version)")]
-        public async Task StoreArbitraryObject()
+        public async Task StoreArbitraryObjectAsync()
         {
             var settings = new Settings();
             var originalValue = new TestClass();
@@ -115,6 +99,23 @@ namespace TestUnits
             var readValue = await settings.ReadAsync<TestClass>("ArbitraryObject");
 
             Assert.Equal(originalValue, readValue);
+        }
+
+
+        [Fact(DisplayName = "Count total number of settings stored (async version)")]
+        public async Task CountSettingsAsync()
+        {
+            var settings = new Settings();
+
+            await settings.ClearAllAsync();
+
+            await settings.StoreAsync("Setting1", 1);
+            await settings.StoreAsync("Setting2", 2);
+            await settings.StoreAsync("Setting3", 3);
+
+            var count = await settings.CountAsync();
+
+            Assert.Equal(3, count);
         }
     }
 }

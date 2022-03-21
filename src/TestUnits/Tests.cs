@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 using SettingsDb;
 
 using Xunit;
+
 
 namespace TestUnits
 {
@@ -106,23 +104,6 @@ namespace TestUnits
         }
 
 
-        class TestClass
-        {
-            public int Property1 { get; set; } = 1;
-
-            public List<string> Property2 { get; set; } = new List<string>(new string[] { "value1", "value2" });
-
-            public override bool Equals(object obj)
-            {
-                if (obj is not TestClass other)
-                    return false;
-
-                return Property1 == other.Property1 &&
-                   Enumerable.SequenceEqual(Property2, other.Property2);
-            }
-        }
-
-
         [Fact(DisplayName = "Store an arbitrary object")]
         public void StoreArbitraryObject()
         {
@@ -133,6 +114,23 @@ namespace TestUnits
             var readValue = settings.Read<TestClass>("ArbitraryObject");
 
             Assert.Equal(originalValue, readValue);
+        }
+
+
+        [Fact(DisplayName = "Count total number of settings stored")]
+        public void CountSettings()
+        {
+            var settings = new Settings();
+
+            settings.ClearAll();
+
+            settings.Store("Setting1", 1);
+            settings.Store("Setting2", 2);
+            settings.Store("Setting3", 3);
+
+            var count = settings.Count();
+
+            Assert.Equal(3, count);
         }
     }
 }
