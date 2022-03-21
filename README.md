@@ -42,6 +42,8 @@ settings.Store("ID", 12345);
 await settings.StoreAsync("ShowToolbar", true);
 ```
 
+If a setting with that name already exists, its value is replaced.
+
 Remember that specified values are serialized to JSON strings prior to be stored into the database, so you can even pass in simple objects:
 
 ``` C#
