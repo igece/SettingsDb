@@ -11,39 +11,91 @@ namespace SettingsDb
 {
     public class Settings
     {
+        public const string DefaultSettingsTable = "Settings";
+
+
         private readonly string _connectionString;
 
+        private readonly string _settingsTable;
 
-        public Settings()
+
+        public Settings(string settingsTable = DefaultSettingsTable)
         {
             _connectionString = $"Data Source={Assembly.GetEntryAssembly().GetName().Name}.db";
+            _settingsTable = settingsTable;
+
             InitDatabase();
         }
 
 
-        public Settings(string databaseName)
+        public Settings(string databaseName, string settingsTable = DefaultSettingsTable)
         {
             if (databaseName == null)
                 throw new ArgumentNullException(nameof(databaseName));
 
             _connectionString = $"Data Source={Path.GetFileNameWithoutExtension(databaseName)}.db";
+            _settingsTable = settingsTable;
+
             InitDatabase();
         }
 
-
+        /// <summary>
+        /// Create the settings table if it doesn't exist yet and
+        /// check its structure to ensure is correct.
+        /// </summary>
+        /// <exception cref="SettingsDbException"></exception>
         private void InitDatabase()
         {
             using (var dbConnection = new SqliteConnection(_connectionString))
             {
                 dbConnection.Open();
 
-                using (var sqlCmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS Settings (Id INTEGER, Name TEXT UNIQUE NOT NULL, Value TEXT, PRIMARY KEY(Id));", dbConnection))
+                using (var sqlCmd = new SqliteCommand($"CREATE TABLE IF NOT EXISTS \"{_settingsTable}\" (Id INTEGER, Name TEXT UNIQUE NOT NULL, Value TEXT, PRIMARY KEY(Id))", dbConnection))
                 {
                     sqlCmd.ExecuteNonQuery();
                 }
 
+                if (!IsSettingsTableOk(dbConnection))
+                {
+                    dbConnection.Close();
+                    throw new SettingsDbException($"{_settingsTable}: Invalid table schema");
+                }
+
                 dbConnection.Close();
             }
+        }
+
+        /// <summary>
+        /// Checks the schema of the settings table, to make sure its is using the correct table. 
+        /// </summary>
+        /// <param name="dbConnection"></param>
+        /// <returns>True, if the table schema is the expected</returns>.
+        private bool IsSettingsTableOk(SqliteConnection dbConnection)
+        {
+            using (var sqlCmd = new SqliteCommand("SELECT COUNT() FROM PRAGMA_TABLE_INFO(@SettingsTable)", dbConnection))
+            {
+                sqlCmd.Parameters.Add(new SqliteParameter("SettingsTable", _settingsTable));
+                
+                if  ((long)sqlCmd.ExecuteScalar() != 3)
+                    return false;
+
+                sqlCmd.CommandText = $"SELECT COUNT() FROM PRAGMA_TABLE_INFO(@SettingsTable) WHERE name='Id'";
+
+                if ((long)sqlCmd.ExecuteScalar() != 1)
+                    return false;
+
+                sqlCmd.CommandText = $"SELECT COUNT() FROM PRAGMA_TABLE_INFO(@SettingsTable) WHERE name='Name'";
+
+                if ((long)sqlCmd.ExecuteScalar() != 1)
+                    return false;
+
+                sqlCmd.CommandText = $"SELECT COUNT() FROM PRAGMA_TABLE_INFO(@SettingsTable) WHERE name='Value'";
+
+                if ((long)sqlCmd.ExecuteScalar() != 1)
+                    return false;
+            }
+
+            return true;
         }
 
 
@@ -56,7 +108,7 @@ namespace SettingsDb
             {
                 dbConnection.Open();
 
-                using (var sqlCmd = new SqliteCommand("INSERT INTO Settings (Name, Value) VALUES (@Name, @Value) ON CONFLICT(Name) DO UPDATE SET Value = @Value", dbConnection))
+                using (var sqlCmd = new SqliteCommand($"INSERT INTO \"{_settingsTable}\" (Name, Value) VALUES (@Name, @Value) ON CONFLICT(Name) DO UPDATE SET Value = @Value", dbConnection))
                 {
                     sqlCmd.Parameters.Add(new SqliteParameter("Name", settingName));
                     sqlCmd.Parameters.Add(new SqliteParameter("Value", JsonSerializer.Serialize(value)));
@@ -85,7 +137,7 @@ namespace SettingsDb
             {
                 dbConnection.Open();
 
-                using (var sqlCmd = new SqliteCommand("SELECT Value FROM Settings WHERE Name = @Name LIMIT 1", dbConnection))
+                using (var sqlCmd = new SqliteCommand($"SELECT Value FROM \"{_settingsTable}\" WHERE Name = @Name LIMIT 1", dbConnection))
                 {
                     sqlCmd.Parameters.Add(new SqliteParameter("Name", settingName));
 
@@ -118,7 +170,7 @@ namespace SettingsDb
             {
                 dbConnection.Open();
 
-                using (var sqlCmd = new SqliteCommand("DELETE FROM Settings WHERE Name = @Name LIMIT 1", dbConnection))
+                using (var sqlCmd = new SqliteCommand($"DELETE FROM \"{_settingsTable}\" WHERE Name = @Name LIMIT 1", dbConnection))
                 {
                     sqlCmd.Parameters.Add(new SqliteParameter("Name", settingName));
                     sqlCmd.ExecuteNonQuery();
@@ -141,7 +193,7 @@ namespace SettingsDb
             {
                 dbConnection.Open();
 
-                using (var sqlCmd = new SqliteCommand("DELETE FROM Settings", dbConnection))
+                using (var sqlCmd = new SqliteCommand($"DELETE FROM \"{_settingsTable}\"", dbConnection))
                     sqlCmd.ExecuteNonQuery();
 
                 dbConnection.Close();
