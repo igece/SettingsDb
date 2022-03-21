@@ -86,3 +86,7 @@ public Task ClearAsync(string settingName);
 public void ClearAll();
 public Task ClearAllAsync();
 ```
+```  C#
+public long Count();
+public long CountAsync();
+```
