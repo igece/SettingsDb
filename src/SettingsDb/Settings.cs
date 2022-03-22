@@ -19,10 +19,10 @@ namespace SettingsDb
         private readonly string _settingsTable;
 
 
-        public Settings(string settingsTable = DefaultSettingsTable)
+        public Settings()
         {
-            _connectionString = $"Data Source={Assembly.GetEntryAssembly().GetName().Name}.db";
-            _settingsTable = settingsTable;
+            _connectionString = $"Data Source={Assembly.GetEntryAssembly().GetName().Name}.Settings.db";
+            _settingsTable = DefaultSettingsTable;
 
             InitDatabase();
         }
