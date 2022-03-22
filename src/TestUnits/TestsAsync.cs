@@ -1,20 +1,19 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using SettingsDb;
 
 using Xunit;
+using Xunit.Extensions.AssemblyFixture;
 
 
 namespace TestUnits
 {
-    public class TestsAsync
+    public class TestsAsync : IAssemblyFixture<AssemblyTestsFixture>
     {
         [Fact(DisplayName = "Store a String (async version)")]
         public async Task StoreStringAsync()
         {
-            var settings = new Settings();
+            var settings = new Settings("StoreStringAsync");
             string originalValue = "test value";
             
             await settings.StoreAsync("String", originalValue);
@@ -24,10 +23,10 @@ namespace TestUnits
         }
 
 
-        [Fact(DisplayName = "Store a Bool (async version)")]
-        public async Task StoreBoolean()
+        [Fact(DisplayName = "Store a Boolean (async version)")]
+        public async Task StoreBooleanAsync()
         {
-            var settings = new Settings();
+            var settings = new Settings("StoreBooleanAsync");
             bool originalValue = true;
 
             await settings.StoreAsync("Boolean", originalValue);
@@ -40,8 +39,8 @@ namespace TestUnits
         [Fact(DisplayName = "Store a Int32 (async version)")]
         public async Task StoreInt32Async()
         {
-            var settings = new Settings();
-            int originalValue = 12345;
+            var settings = new Settings("StoreInt32Async");
+            int originalValue = int.MaxValue;
 
             await settings.StoreAsync("Int32", originalValue);
             var readValue = await settings.ReadAsync<int>("Int32");
@@ -53,8 +52,8 @@ namespace TestUnits
         [Fact(DisplayName = "Store a Int64 (async version)")]
         public async Task StoreInt64Async()
         {
-            var settings = new Settings();
-            long originalValue = 12345;
+            var settings = new Settings("StoreInt64Async");
+            long originalValue = long.MaxValue;
 
             await settings.StoreAsync("Int64", originalValue);
             var readValue = await settings.ReadAsync<long>("Int64");
@@ -66,7 +65,7 @@ namespace TestUnits
         [Fact(DisplayName = "Store a Byte array (async version)")]
         public async Task StoreByteArrayAsync()
         {
-            var settings = new Settings();
+            var settings = new Settings("StoreByteArrayAsync");
             byte[] originalValue = new byte[] { 14, 34, 2, 54, 3 };
 
             await settings.StoreAsync("ByteArray", originalValue);
@@ -79,7 +78,7 @@ namespace TestUnits
         [Fact(DisplayName = "Store a Int32 array (async version)")]
         public async Task StoreInt32ArrayAsync()
         {
-            var settings = new Settings();
+            var settings = new Settings("StoreInt32ArrayAsync");
             int[] originalValue = new int[] { 14, 34, 2, 54, 3 };
 
             await settings.StoreAsync("Int32Array", originalValue);
@@ -92,7 +91,7 @@ namespace TestUnits
         [Fact(DisplayName = "Store an arbitrary object (async version)")]
         public async Task StoreArbitraryObjectAsync()
         {
-            var settings = new Settings();
+            var settings = new Settings("StoreArbitraryObjectAsync");
             var originalValue = new TestClass();
 
             await settings.StoreAsync("ArbitraryObject", originalValue);
@@ -105,9 +104,7 @@ namespace TestUnits
         [Fact(DisplayName = "Count total number of settings stored (async version)")]
         public async Task CountSettingsAsync()
         {
-            var settings = new Settings();
-
-            await settings.ClearAllAsync();
+            var settings = new Settings("CountSettingsAsync");
 
             await settings.StoreAsync("Setting1", 1);
             await settings.StoreAsync("Setting2", 2);
