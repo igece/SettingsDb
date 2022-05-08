@@ -4,7 +4,12 @@
 [![Tests](https://github.com/igece/SettingsDb/actions/workflows/tests.yml/badge.svg)](https://github.com/igece/SettingsDb/actions/workflows/tests.yml)
 
 # SettingsDb
-SettingsDb is a .NET Standard library that allows to manage persistence of application settings in a simple and fast way. Settings values are serialized as JSON objects and stored in a [SQLite](http://sqlite.org) database located in the same directory as the application. This offers a great level of flexibility in terms of what type of data can be stored.
+SettingsDb is a .NET Standard library that allows to manage persistence of application settings in a simple and fast way.
+Settings values are serialized as JSON objects and stored in a database.
+This offers a great level of flexibility in terms of what type of data can be stored.
+
+Any type of database can be used, as long as there is an specialization of
+[DbConnection](https://docs.microsoft.com/en-us/dotnet/api/system.data.common.dbconnection) for it.
 
 
 ## Installation
@@ -24,6 +29,44 @@ dotnet add package SettingsDb
 
 ## Usage
 
+Just create an instance of the `SettingsDb` class specifying the type of connection, the connection string and (optionally) the database table to use. If no table name is specified, "Settings" will be used.
+
+``` C#
+// Use a SQL Server database to store the settings.
+var settings = new DbSettings<SqlConnection>("Database=myDataBase");
+```
+
+``` C#
+// Use a SQL Server database to store the settings in the "AppSettings" table.
+var settings = new DbSettings<SqlConnection>("Database=myDataBase", "AppSettings");
+```
+
+When using a [SQLite](http://sqlite.org) database, `Settings` class can be used instead. `Settings` acts as a shortcut for `DbSettings<SqliteConnection>` and provides backwards compatibility with previous versions of the library.
+
+``` C#
+// Use SQLite to store the settings.
+var settings = new Settings();
+
+// This is equivalent to use:
+var settings = new DbSettings<SqliteConnection>($"Data Source={Assembly.GetEntryAssembly().GetName().Name}.Settings.db");
+```
+
+``` C#
+// Use SQLite to store the settings in the "AppSettings" table.
+var settings = new Settings("AppSettings");
+
+// This is equivalent to use:
+var settings = new DbSettings<SqliteConnection>($"Data Source={Assembly.GetEntryAssembly().GetName().Name}.Settings.db", "AppSettings");
+```
+
+``` C#
+// Use SQLite to store the settings in the "AppSettings" table, using "Settings.db" as the database file name.
+var settings = new Settings("Settings", "AppSettings");
+
+// This is equivalent to use:
+var settings = new DbSettings<SqliteConnection>("Data Source=Settings.db", "AppSettings");
+```
+
 When a new instance of the `Settings` class is created, it checks for existence of the database file and creates it if necessary. By default, the assembly name of the application will be used as the database name, but you can specify any other name in the constructor.
 
 ### Storing a Value
@@ -34,6 +77,7 @@ To store a value, just call the `Store` method (or its async version `StoreAsync
 public void Store<T>(string settingName, T value);
 public async Task StoreAsync<T>(string settingName, T value);
 ```
+
 ``` C#
 var settings = new Settings();
 
@@ -67,6 +111,7 @@ and, optionally, a default value to be used if the specified setting is not foun
 public T Read<T>(string settingName, T defaultValue = default);
 public async Task<T> ReadAsync<T>(string settingName, T defaultValue = default);
 ```
+
 ``` C#
 var settings = new Settings();
 
@@ -82,10 +127,12 @@ If no default value is specified and the setting name is not found, SettingsDb w
 public void Clear(string settingName);
 public Task ClearAsync(string settingName);
 ```
+
 ```  C#
 public void ClearAll();
 public Task ClearAllAsync();
 ```
+
 ```  C#
 public long Count();
 public long CountAsync();
