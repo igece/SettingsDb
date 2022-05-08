@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SettingsDb
 {
-    public class SettingsDb<TConnection> where TConnection : DbConnection, new()
+    public class SettingsDb<TConnection> : ISettingsDb where TConnection : DbConnection, new()
     {
         public const string DefaultSettingsTable = "Settings";
 
@@ -64,12 +64,12 @@ namespace SettingsDb
         private bool IsSettingsTableOk(TConnection dbConnection)
         {
             using (var sqlCmd = dbConnection.CreateCommand())
-            {               
+            {
                 sqlCmd.CommandText = "SELECT COUNT() FROM PRAGMA_TABLE_INFO(@SettingsTable)";
                 sqlCmd.AddParameter("SettingsTable", _settingsTable);
 
                 //sqlCmd.Parameters.Add(CreateSqlParameter(sqlCmd, "SettingsTable", _settingsTable));
-                
+
                 if ((long)sqlCmd.ExecuteScalar() != 3)
                     return false;
 
@@ -234,7 +234,7 @@ namespace SettingsDb
 
             using (var dbConnection = new TConnection())
             {
-                dbConnection.ConnectionString= _connectionString;
+                dbConnection.ConnectionString = _connectionString;
                 dbConnection.Open();
 
                 using (var sqlCmd = dbConnection.CreateCommand())

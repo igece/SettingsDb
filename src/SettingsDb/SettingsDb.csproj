@@ -11,11 +11,11 @@
     <Copyright>Copyright (c) 2022 Israel Gómez de Celis González</Copyright>
     <PackageTags>settings;database;sqlite;json</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <AssemblyVersion>1.2.0</AssemblyVersion>
-    <Version>1.2.0</Version>
-    <FileVersion>1.2.0</FileVersion>
+    <AssemblyVersion>1.2.1</AssemblyVersion>
+    <Version>1.2.1</Version>
+    <FileVersion>1.2.1</FileVersion>
     <Description>Store application settings without complications.</Description>
-    <PackageReleaseNotes>Added support for other database types than SQLite</PackageReleaseNotes>
+    <PackageReleaseNotes>SettingsDb class now implements a ISettingsDb interface (useful when using Dependency Injection)</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
